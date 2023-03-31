@@ -1,0 +1,15 @@
+spring:
+    #MQTT配置信息
+  mqtt:
+    #MQTT服务地址，端口号默认11883，如果有多个，用逗号隔开
+    url: tcp://broker.emqx.io:1883
+    #用户名
+    username: root
+    #密码
+    password: root
+    #客户端id(不能重复)
+    client:
+      id: mqttx_b6fe7e7d
+    #MQTT默认的消息推送主题，实际可在调用接口是指定
+    default:
+      topic: /mqtt/test/wen/1

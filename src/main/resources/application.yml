@@ -1,0 +1,39 @@
+server:
+  port: 30001
+  tomcat:
+    connection-timeout: 20000
+
+spring:
+  profiles:
+    active: provider
+  application:
+    ## 修改此参数：项目名称
+    name: MQTT-Test
+
+  datasource:
+    url: jdbc:dm://10.126.0.4:5236/SCHEDULE_ZTK?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf-8
+    username: SCHEDULE_ZTK
+    password: d2gQt1aPRaEzBqd6jBEC9y/5x3zuiXZwuhfugLpcvNlUiWozNQO8ZN4LKfWNEBYErgwl5UN9XV/8M6ODDoOvJA==
+    driver-class-name: dm.jdbc.driver.DmDriver
+    druid:
+      initial-size: 5
+      min-idle: 10
+      max-active: 20
+      test-on-borrow: true
+      filter:
+        config:
+          enabled: true
+      connection-properties: config.decrypt=true;config.decrypt.key=${public.key}
+      validation-query: select 1
+
+public:
+  key: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAN5iIVNPqvr7Rz6pIC88J2kfu72MmXLsTVUtpfDYaW0GuHcqLXQEsDh0Lk/i+8O9UYAcKut0tgPBzjh/WLL5FtMCAwEAAQ==
+
+
+logging:
+  level:
+    root: INFO
+  file:
+    path: /data/app/logs/${spring.application.name}/
+  linux:
+    path: /data/app/logs/mqtt_test2/spring.log

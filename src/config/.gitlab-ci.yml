@@ -1,0 +1,53 @@
+# 定义一些变量, 下面各阶段会使用
+variables:
+  server_ip: 10.201.0.62
+  upload_path: /data/apps
+
+
+#cache:  #3
+#  paths:
+#    - /data/maven/repository
+# 定义执行的各个阶段及顺序
+stages:
+  - build
+  - upload
+
+build:
+  stage: build
+  script:
+    - mvn package -B -Dmaven.test.skip=true
+  cache:
+    paths:
+      - target
+  artifacts:
+    expire_in: 1 hrs  # 一小时后过期
+    paths:
+      - target
+
+#部署,运行(开发)
+deploy-agri:
+  stage: upload
+  script:
+    - ': "==============        开发环境检测    a   ================="'
+    #    - ls -l target/
+    #    进入到target目录
+    - cd target
+    #    - echo "${jar_name}"
+    #    - echo "${jar_version}"
+    - TEMP_PATH=`pwd`
+    - jar_name=`ls *.jar`
+    - tar_name=`ls *.tar.gz`
+    - temp_dir=$(basename ${tar_name} .tar.gz )
+    #    - echo ${TEMP_PATH}
+    #    - echo ${jar_name}
+    #    - echo ${tar_name}
+    #    - echo ${upload_path}/${tar_name}
+    - ': "================          备份          ================="'
+    - ': "================    停止应用,删除旧包     ================="'
+    - ': "================        开始执行         ================="'
+    - ssh -o StrictHostKeychecking=no root@${server_ip} "mkdir -p ${upload_path}"
+    - scp -o StrictHostKeychecking=no ${tar_name} root@${server_ip}:${upload_path}
+    - ssh -o StrictHostKeychecking=no root@${server_ip} "tar -zxvf ${upload_path}/${tar_name} -C ${upload_path}"
+    - ssh -o StrictHostKeychecking=no root@${server_ip} "sh ${upload_path}/${temp_dir}/bin/start.sh"
+    #    - ssh -p  root@10.201.0.62 'mkdir -p /data/apps/'
+    - ': "=============         检测是否成功启动        =============="'
